@@ -38,9 +38,13 @@ export default function CameraFeed({ active, onObservation }: CameraFeedProps) {
           console.error("Camera error:", err);
           if (err instanceof DOMException) {
             if (err.name === "NotAllowedError") {
-              setCameraError("Camera permission denied. Allow camera access in browser settings.");
+              setCameraError(
+                "Camera permission denied. Allow camera access in browser settings.",
+              );
             } else if (err.name === "NotFoundError") {
-              setCameraError("No camera found. Connect a camera and try again.");
+              setCameraError(
+                "No camera found. Connect a camera and try again.",
+              );
             } else {
               setCameraError(`Camera error: ${err.message}`);
             }
@@ -97,59 +101,119 @@ export default function CameraFeed({ active, onObservation }: CameraFeedProps) {
   }, [active, connected, captureAndSend]);
 
   return (
-    <div className="relative rounded-lg overflow-hidden border border-[var(--cw-border)] bg-[var(--cw-bg-secondary)]">
-      <video
-        ref={videoRef}
-        autoPlay
-        playsInline
-        muted
-        className="w-full aspect-video object-cover bg-gray-100"
-      />
-      <canvas ref={canvasRef} className="hidden" />
+    <div className="h-full rounded-2xl overflow-hidden bg-[var(--cw-navy)] flex flex-col relative">
+      {/* Camera viewport */}
+      <div className="flex-1 relative flex items-center justify-center">
+        <video
+          ref={videoRef}
+          autoPlay
+          playsInline
+          muted
+          className={`absolute inset-0 w-full h-full object-cover ${active ? "block" : "hidden"}`}
+        />
+        <canvas ref={canvasRef} className="hidden" />
 
-      {/* Status badge */}
-      {active && (
-        <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5 bg-white/80 backdrop-blur-sm rounded-md px-2.5 py-1 border border-[var(--cw-border)]">
+        {/* Standby state */}
+        {!active && !cameraError && (
+          <div className="flex flex-col items-center gap-4">
+            {/* Corner brackets */}
+            <div className="relative w-48 h-36">
+              {/* Top-left */}
+              <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-white/30 rounded-tl-sm animate-[corner-scan_3s_ease-in-out_infinite]" />
+              {/* Top-right */}
+              <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-white/30 rounded-tr-sm animate-[corner-scan_3s_ease-in-out_infinite_0.5s]" />
+              {/* Bottom-left */}
+              <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-white/30 rounded-bl-sm animate-[corner-scan_3s_ease-in-out_infinite_1s]" />
+              {/* Bottom-right */}
+              <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-white/30 rounded-br-sm animate-[corner-scan_3s_ease-in-out_infinite_1.5s]" />
+
+              {/* Camera icon */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-16 h-16 rounded-full border-2 border-white/20 flex items-center justify-center">
+                  <svg
+                    className="w-7 h-7 text-white/40"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={1.5}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-center">
+              <p className="text-white/50 text-sm font-medium">
+                Camera feed appears here
+              </p>
+              <p className="text-white/30 text-xs mt-1">
+                Position paper drawing in frame
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Camera error */}
+        {cameraError && active && (
+          <div className="absolute inset-0 flex items-center justify-center bg-[var(--cw-navy)]/90 p-4">
+            <p className="text-sm text-red-400 text-center leading-relaxed">
+              {cameraError}
+            </p>
+          </div>
+        )}
+
+        {/* Active status badge */}
+        {active && (
+          <div className="absolute top-4 right-4 flex items-center gap-2 bg-black/40 backdrop-blur-sm rounded-lg px-3 py-1.5">
+            <div
+              className={`w-2 h-2 rounded-full ${
+                connected
+                  ? "bg-[var(--cw-risk-low)]"
+                  : "bg-[var(--cw-risk-moderate)] animate-pulse"
+              }`}
+            />
+            <span className="text-xs text-white/80 font-medium">
+              {connected ? "Gemini Live" : "Connecting..."}
+            </span>
+          </div>
+        )}
+
+        {/* API key warning */}
+        {!apiKey && active && (
+          <div className="absolute bottom-14 left-4 text-xs text-amber-400 bg-black/40 backdrop-blur-sm rounded-lg px-3 py-1.5">
+            Set NEXT_PUBLIC_GEMINI_API_KEY in .env.local
+          </div>
+        )}
+      </div>
+
+      {/* Bottom status bar */}
+      <div className="flex items-center justify-between px-5 py-3 border-t border-white/10">
+        <div className="flex items-center gap-2">
           <div
             className={`w-1.5 h-1.5 rounded-full ${
-              connected
-                ? "bg-[var(--cw-risk-low)]"
-                : "bg-[var(--cw-risk-moderate)] animate-pulse"
+              active
+                ? "bg-[var(--cw-risk-low)] animate-[status-pulse_2s_ease-in-out_infinite]"
+                : "bg-white/30"
             }`}
           />
-          <span className="text-[11px] text-[var(--cw-text-secondary)] font-medium">
-            {connected ? "Gemini Live" : "Connecting..."}
+          <span className="text-xs text-white/50 uppercase tracking-wider font-medium">
+            {active ? "Recording" : "Standby"}
           </span>
         </div>
-      )}
-
-      {/* Inactive overlay */}
-      {!active && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-          <svg className="w-7 h-7 text-[var(--cw-text-tertiary)]/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" />
-          </svg>
-          <span className="text-[11px] text-[var(--cw-text-tertiary)] font-medium">
-            Camera activates with session
-          </span>
-        </div>
-      )}
-
-      {/* Camera error */}
-      {cameraError && active && (
-        <div className="absolute inset-0 flex items-center justify-center bg-[var(--cw-bg-secondary)]/90 p-4">
-          <p className="text-[12px] text-[var(--cw-risk-high)] text-center leading-relaxed">
-            {cameraError}
-          </p>
-        </div>
-      )}
-
-      {/* API key warning */}
-      {!apiKey && active && (
-        <div className="absolute bottom-2.5 left-2.5 text-[11px] text-[var(--cw-risk-moderate)] bg-white/80 backdrop-blur-sm rounded-md px-2.5 py-1 border border-[var(--cw-risk-moderate)]/20">
-          Set NEXT_PUBLIC_GEMINI_API_KEY in .env.local
-        </div>
-      )}
+        <span className="text-xs text-white/30 font-medium">
+          Paper Drawing
+        </span>
+      </div>
     </div>
   );
 }
