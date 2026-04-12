@@ -45,4 +45,24 @@ export interface FusionResult {
   speech_assessment: string;
 }
 
-export type SessionState = "idle" | "recording" | "analyzing" | "complete";
+export type SessionState =
+  | "idle"
+  | "recording"
+  | "analyzing"
+  | "generating_report"
+  | "complete";
+
+export interface ReportNarrative {
+  summary_sentences: string[];
+  drawing_findings: string;
+  speech_findings: string;
+  recommendation: string;
+  graph_interpretation: string;
+}
+
+export interface PresignedUrls {
+  audio_url: string;
+  video_url: string;
+  pdf_url: string;
+  session_id: string;
+}

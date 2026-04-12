@@ -1,14 +1,26 @@
 "use client";
 
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { useCallback, useRef, useState } from "react";
+import { ConversationProvider } from "@elevenlabs/react";
 import VoiceAgent from "./VoiceAgent";
-import CameraFeed from "./CameraFeed";
+import CameraFeed, { type CameraFeedHandle } from "./CameraFeed";
 import SpeechGraph from "./SpeechGraph";
 import ScoresPanel from "./ScoresPanel";
 import TranscriptPanel, { type TranscriptEntry } from "./TranscriptPanel";
+import { ReportViewer } from "./report/ReportViewer";
 import { useSpeechGraph } from "@/hooks/useSpeechGraph";
+import { useMediaRecorders } from "@/hooks/useMediaRecorders";
 import type { FusionResult, SessionState } from "@/lib/types";
+
+const ReportGenerator = dynamic(
+  () =>
+    import("./report/ReportGenerator").then((m) => ({
+      default: m.ReportGenerator,
+    })),
+  { ssr: false },
+);
 
 const BACKEND_URL =
   process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
@@ -21,8 +33,23 @@ export default function Dashboard() {
   const [fusionResult, setFusionResult] = useState<FusionResult | null>(null);
   const [fusionLoading, setFusionLoading] = useState(false);
 
+  // Report-related state
+  const [clockDrawingSnapshot, setClockDrawingSnapshot] = useState<string | null>(null);
+  const [reportPdfUrl, setReportPdfUrl] = useState<string | null>(null);
+  const [reportUploaded, setReportUploaded] = useState(false);
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const [videoBlob, setVideoBlob] = useState<Blob | null>(null);
+  const [sessionId] = useState(() => crypto.randomUUID().slice(0, 12));
+
+  // Refs
   const patientSpeechRef = useRef("");
+  const cameraRef = useRef<CameraFeedHandle>(null);
+  const audioStreamRef = useRef<MediaStream | null>(null);
+
+  // Hooks
   const { graphData, analyze } = useSpeechGraph();
+  const { startAudioRecording, startVideoRecording, stopAll } =
+    useMediaRecorders();
 
   const handleTranscript = useCallback(
     (text: string, role: "user" | "agent") => {
@@ -39,13 +66,61 @@ export default function Dashboard() {
     setObservations((prev) => [...prev, text]);
   }, []);
 
-  const handleSessionStart = useCallback(() => {
+  const handleSessionStart = useCallback(async () => {
     setSessionState("recording");
-  }, []);
 
-  const handleSessionEnd = useCallback(() => {
-    setSessionState((prev) => (prev === "recording" ? "idle" : prev));
-  }, []);
+    try {
+      const audioStream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+      });
+      audioStreamRef.current = audioStream;
+      startAudioRecording(audioStream);
+    } catch (err) {
+      console.error("Failed to start audio recording:", err);
+    }
+
+    setTimeout(() => {
+      const videoStream = cameraRef.current?.getStream();
+      if (videoStream) {
+        startVideoRecording(videoStream);
+      }
+    }, 1000);
+  }, [startAudioRecording, startVideoRecording]);
+
+  const handleSessionEnd = useCallback(async () => {
+    const snapshot = cameraRef.current?.captureFrame() ?? null;
+    setClockDrawingSnapshot(snapshot);
+
+    const { audioBlob: audio, videoBlob: video } = await stopAll();
+    setAudioBlob(audio);
+    setVideoBlob(video);
+
+    audioStreamRef.current?.getTracks().forEach((t) => t.stop());
+    audioStreamRef.current = null;
+
+    setSessionState("analyzing");
+    setFusionLoading(true);
+    try {
+      const res = await fetch(`${BACKEND_URL}/analyze-fusion`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          drawing_observations: observations,
+          speech_metrics: graphData?.metrics ?? {},
+          transcript: patientSpeechRef.current.trim(),
+        }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data: FusionResult = await res.json();
+      setFusionResult(data);
+      setSessionState("generating_report");
+    } catch (err) {
+      console.error("Fusion analysis failed:", err);
+      setSessionState("idle");
+    } finally {
+      setFusionLoading(false);
+    }
+  }, [observations, graphData, stopAll]);
 
   const handleRunFusion = useCallback(async () => {
     if (!patientSpeechRef.current.trim() && observations.length === 0) return;
@@ -73,6 +148,36 @@ export default function Dashboard() {
     }
   }, [observations, graphData]);
 
+  const handleReportComplete = useCallback(
+    (pdfUrl: string, uploaded: boolean) => {
+      setReportPdfUrl(pdfUrl);
+      setReportUploaded(uploaded);
+      setSessionState("complete");
+    },
+    [],
+  );
+
+  const handleReportError = useCallback((error: string) => {
+    console.error("Report generation failed:", error);
+    setSessionState("complete");
+  }, []);
+
+  const handleNewSession = useCallback(() => {
+    if (reportPdfUrl) URL.revokeObjectURL(reportPdfUrl);
+
+    setSessionState("idle");
+    setTranscript([]);
+    setObservations([]);
+    setFusionResult(null);
+    setFusionLoading(false);
+    setClockDrawingSnapshot(null);
+    setReportPdfUrl(null);
+    setReportUploaded(false);
+    setAudioBlob(null);
+    setVideoBlob(null);
+    patientSpeechRef.current = "";
+  }, [reportPdfUrl]);
+
   const isActive = sessionState === "recording";
   const latestObservation = observations[observations.length - 1] ?? "";
 
@@ -99,12 +204,14 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <VoiceAgent
-          onTranscript={handleTranscript}
-          onSessionStart={handleSessionStart}
-          onSessionEnd={handleSessionEnd}
-          isActive={isActive}
-        />
+        <ConversationProvider>
+          <VoiceAgent
+            onTranscript={handleTranscript}
+            onSessionStart={handleSessionStart}
+            onSessionEnd={handleSessionEnd}
+            isActive={isActive}
+          />
+        </ConversationProvider>
       </header>
 
       {/* ─── Main Content ─── */}
@@ -225,7 +332,7 @@ export default function Dashboard() {
 
         {/* ─── Center: Camera Feed ─── */}
         <div className="flex-1 min-h-0">
-          <CameraFeed active={isActive} onObservation={handleObservation} />
+          <CameraFeed ref={cameraRef} active={isActive} onObservation={handleObservation} />
         </div>
 
         {/* ─── Right: Speech Graph ─── */}
@@ -291,6 +398,31 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Report Generation Overlay */}
+      {sessionState === "generating_report" && fusionResult && (
+        <ReportGenerator
+          fusionResult={fusionResult}
+          graphData={graphData}
+          clockDrawingSnapshot={clockDrawingSnapshot}
+          observations={observations}
+          transcript={patientSpeechRef.current.trim()}
+          audioBlob={audioBlob}
+          videoBlob={videoBlob}
+          sessionId={sessionId}
+          onComplete={handleReportComplete}
+          onError={handleReportError}
+        />
+      )}
+
+      {/* Report Viewer Overlay */}
+      {sessionState === "complete" && reportPdfUrl && (
+        <ReportViewer
+          pdfUrl={reportPdfUrl}
+          uploaded={reportUploaded}
+          onNewSession={handleNewSession}
+        />
+      )}
     </div>
   );
 }

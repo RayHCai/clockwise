@@ -3,13 +3,15 @@
 import os
 import uuid
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from speech_graph import analyze_transcript
 from fusion import analyze_fusion
 from conversation import get_session, remove_session
+from report_narrative import generate_clinical_narrative
+from s3_upload import generate_presigned_urls
 
 app = FastAPI(title="Guidr API", version="0.1.0")
 
@@ -45,6 +47,13 @@ class ConversationTurnRequest(BaseModel):
     message: str
 
 
+class ReportNarrativeRequest(BaseModel):
+    fusion_result: dict
+    drawing_observations: list[str]
+    speech_metrics: dict
+    transcript: str
+
+
 @app.get("/health")
 def health():
     return {"status": "ok"}
@@ -64,6 +73,27 @@ async def fusion_endpoint(req: FusionRequest):
         transcript=req.transcript,
     )
     return result
+
+
+@app.post("/generate-report-narrative")
+async def report_narrative_endpoint(req: ReportNarrativeRequest):
+    """Generate an enhanced clinical narrative for the PDF report."""
+    result = await generate_clinical_narrative(
+        fusion_result=req.fusion_result,
+        drawing_observations=req.drawing_observations,
+        speech_metrics=req.speech_metrics,
+        transcript=req.transcript,
+    )
+    return result
+
+
+@app.post("/upload/presign")
+def presign_upload(req: dict):
+    """Generate presigned S3 URLs for artifact upload."""
+    if os.getenv("ENABLE_S3_UPLOAD") != "true":
+        raise HTTPException(status_code=503, detail="S3 uploads disabled")
+    session_id = req.get("session_id", uuid.uuid4().hex[:12])
+    return generate_presigned_urls(session_id)
 
 
 @app.post("/conversation/start")
