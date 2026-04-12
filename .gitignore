@@ -1,0 +1,46 @@
+# === Environment & Secrets ===
+.env
+.env.*
+
+# === Python ===
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+*.so
+venv/
+.venv/
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+pip-log.txt
+
+# === Node / Next.js ===
+node_modules/
+.next/
+out/
+.turbo/
+coverage/
+*.tsbuildinfo
+
+# === OS ===
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# === IDE ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# === Logs ===
+*.log
+npm-debug.log*

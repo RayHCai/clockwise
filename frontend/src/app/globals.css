@@ -1,0 +1,160 @@
+@import "tailwindcss";
+
+/* ─── Guidr Design System — UT Burnt Orange / Off-White ─── */
+
+:root {
+  /* Background — warm off-white */
+  --cw-bg: #FDF8F3;
+  --cw-bg-secondary: #F5EFE6;
+
+  /* Surfaces — warm whites */
+  --cw-surface: #FFFAF5;
+  --cw-surface-hover: #F5EDE3;
+  --cw-surface-elevated: #EDE5D8;
+
+  /* Borders */
+  --cw-border: rgba(120, 70, 20, 0.12);
+  --cw-border-hover: rgba(120, 70, 20, 0.22);
+
+  /* Text */
+  --cw-text-primary: #2C1A05;
+  --cw-text-secondary: #6B5744;
+  --cw-text-tertiary: #9C8B78;
+
+  /* Accent — UT Burnt Orange */
+  --cw-accent: #BF5700;
+  --cw-accent-hover: #A34B00;
+  --cw-accent-muted: rgba(191, 87, 0, 0.08);
+
+  /* Semantic Risk */
+  --cw-risk-low: #10B981;
+  --cw-risk-moderate: #F59E0B;
+  --cw-risk-high: #EF4444;
+  --cw-risk-low-muted: rgba(16, 185, 129, 0.10);
+  --cw-risk-moderate-muted: rgba(245, 158, 11, 0.10);
+  --cw-risk-high-muted: rgba(239, 68, 68, 0.10);
+}
+
+@theme inline {
+  --color-background: var(--cw-bg);
+  --color-foreground: var(--cw-text-primary);
+  --color-surface: var(--cw-surface);
+  --color-surface-hover: var(--cw-surface-hover);
+  --color-border-subtle: var(--cw-border);
+  --color-accent: var(--cw-accent);
+  --color-accent-hover: var(--cw-accent-hover);
+  --color-accent-muted: var(--cw-accent-muted);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
+}
+
+body {
+  background: var(--cw-bg-secondary);
+  color: var(--cw-text-primary);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Cursor pointer on all interactive elements ─── */
+
+button,
+[role="button"],
+a,
+select,
+input[type="checkbox"],
+input[type="radio"],
+input[type="submit"],
+input[type="button"],
+summary {
+  cursor: pointer;
+}
+
+/* ─── Cards — Linear/Notion style ─── */
+
+.card {
+  background: var(--cw-surface);
+  border: 1px solid var(--cw-border);
+  border-radius: 8px;
+}
+
+.card-hover {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.card-hover:hover {
+  border-color: var(--cw-border-hover);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+/* ─── Keyframes ─── */
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 16px rgba(191, 87, 0, 0.2); }
+  50% { box-shadow: 0 0 28px rgba(191, 87, 0, 0.35); }
+}
+
+@keyframes orb-breathe {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes status-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ─── ReactFlow Overrides ─── */
+
+.react-flow__background {
+  background-color: transparent !important;
+}
+
+.react-flow__controls {
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.react-flow__controls button {
+  background: var(--cw-surface) !important;
+  border: 1px solid var(--cw-border) !important;
+  color: var(--cw-text-secondary) !important;
+  fill: var(--cw-text-secondary) !important;
+  border-radius: 6px !important;
+  width: 28px !important;
+  height: 28px !important;
+  cursor: pointer !important;
+}
+
+.react-flow__controls button:hover {
+  background: var(--cw-surface-hover) !important;
+  color: var(--cw-text-primary) !important;
+  fill: var(--cw-text-primary) !important;
+}
+
+.react-flow__controls button + button {
+  margin-top: 2px;
+}
+
+/* ─── Scrollbar ─── */
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.16);
+}
