@@ -62,6 +62,7 @@ export default function CameraFeed({ active, onObservation }: CameraFeedProps) {
 
   // Connect/disconnect Gemini Live
   useEffect(() => {
+    console.log("[CameraFeed] active:", active, "apiKey:", apiKey ? "present" : "MISSING");
     if (active && apiKey) {
       connect();
     } else {
@@ -74,19 +75,29 @@ export default function CameraFeed({ active, onObservation }: CameraFeedProps) {
   const captureAndSend = useCallback(() => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
-    if (!video || !canvas || video.readyState < 2) return;
+    if (!video || !canvas) {
+      console.log("[CameraFeed] captureAndSend skipped — video:", !!video, "canvas:", !!canvas);
+      return;
+    }
+    if (video.readyState < 2) {
+      console.log("[CameraFeed] captureAndSend skipped — video not ready, readyState:", video.readyState);
+      return;
+    }
 
     canvas.width = 640;
     canvas.height = 480;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     ctx.drawImage(video, 0, 0, 640, 480);
+    console.log("[CameraFeed] Captured frame, sending to Gemini...");
     sendFrame(canvas);
   }, [sendFrame]);
 
   useEffect(() => {
+    console.log("[CameraFeed] Frame interval effect — active:", active, "connected:", connected);
     if (active && connected) {
-      intervalRef.current = setInterval(captureAndSend, 2000);
+      console.log("[CameraFeed] Starting frame capture interval (every 5s)");
+      intervalRef.current = setInterval(captureAndSend, 5000);
     } else if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
@@ -97,13 +108,13 @@ export default function CameraFeed({ active, onObservation }: CameraFeedProps) {
   }, [active, connected, captureAndSend]);
 
   return (
-    <div className="relative rounded-lg overflow-hidden border border-[var(--cw-border)] bg-[var(--cw-bg-secondary)]">
+    <div className="relative flex-1 min-h-0 rounded-lg overflow-hidden border border-[var(--cw-border)] bg-[var(--cw-bg-secondary)]">
       <video
         ref={videoRef}
         autoPlay
         playsInline
         muted
-        className="w-full aspect-video object-cover bg-gray-100"
+        className="w-full h-full object-contain bg-gray-100"
       />
       <canvas ref={canvasRef} className="hidden" />
 

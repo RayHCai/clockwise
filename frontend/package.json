@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "postinstall": "node scripts/patch-elevenlabs.js"
   },
   "dependencies": {
     "@elevenlabs/react": "^1.1.0",
@@ -17,6 +18,9 @@
     "next": "16.2.3",
     "react": "19.2.4",
     "react-dom": "19.2.4"
+  },
+  "overrides": {
+    "livekit-client": "2.11.4"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
