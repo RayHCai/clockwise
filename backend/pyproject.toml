@@ -11,13 +11,14 @@ dependencies = [
     "scipy>=1.12.0",
     "google-genai>=1.0.0",
     "python-dotenv>=1.0.0",
+    "boto3>=1.35.0",
 ]
 
 [project.optional-dependencies]
 dev = ["ruff>=0.8.0"]
 
 [tool.setuptools]
-py-modules = ["main", "speech_graph", "fusion", "conversation"]
+py-modules = ["main", "speech_graph", "fusion", "conversation", "report_narrative", "s3_upload"]
 
 [tool.ruff]
 target-version = "py310"
@@ -28,4 +29,4 @@ select = ["E", "F", "W", "I", "N", "UP", "B", "SIM"]
 ignore = []
 
 [tool.ruff.lint.isort]
-known-first-party = ["main", "speech_graph", "fusion", "conversation"]
+known-first-party = ["main", "speech_graph", "fusion", "conversation", "report_narrative", "s3_upload"]
