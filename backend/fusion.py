@@ -31,8 +31,10 @@ async def analyze_fusion(
     """
     client = get_client()
 
-    prompt = f"""You are a clinical cognitive assessment AI. Analyze the following multimodal data
-from a Clock Drawing Test (CDT) dementia screening session and produce a structured risk assessment.
+    prompt = f"""You are a clinical cognitive assessment AI. Analyze the following \
+multimodal data
+from a Clock Drawing Test (CDT) dementia screening session and produce a structured \
+risk assessment.
 
 ## Drawing Observations (from real-time camera analysis)
 {json.dumps(drawing_observations, indent=2)}
@@ -56,13 +58,15 @@ Key metric interpretation:
 Produce a JSON response with:
 1. "composite_score": 0-100 (0=no concern, 100=severe concern)
 2. "risk_level": "low" | "moderate" | "high"
-3. "subscores": object with keys "visuospatial", "executive", "language", "motor" each 0-100
+3. "subscores": object with keys "visuospatial", "executive", "language", "motor" each \
+0-100
 4. "confidence": "low" | "medium" | "high"
 5. "clinical_notes": brief clinical summary (2-3 sentences)
 6. "drawing_assessment": brief assessment of clock drawing quality
 7. "speech_assessment": brief assessment of speech patterns
 
-IMPORTANT: This is a screening tool, not a diagnosis. Frame all outputs as risk indicators
+IMPORTANT: This is a screening tool, not a diagnosis. Frame all outputs as risk \
+indicators
 that warrant further clinical evaluation."""
 
     response = client.models.generate_content(

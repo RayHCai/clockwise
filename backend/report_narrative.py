@@ -28,7 +28,8 @@ async def generate_clinical_narrative(
     """
     client = get_client()
 
-    prompt = f"""You are a clinical neuropsychologist writing a cognitive screening report
+    prompt = f"""You are a clinical neuropsychologist writing a cognitive screening \
+report
 for a patient's medical chart. Based on the following multimodal assessment data from a
 Clock Drawing Test (CDT) session, produce a structured clinical narrative.
 
@@ -56,9 +57,11 @@ Key metric interpretation:
 ## Instructions
 Produce a JSON response with exactly these fields:
 
-1. "summary_sentences": array of 2-3 plain-language sentences suitable for a medical chart.
+1. "summary_sentences": array of 2-3 plain-language sentences suitable for a medical \
+chart.
    Use clinical language that a PCP would attach to an AWV note. Example style:
-   "Patient demonstrated intact visuospatial construction but notable word-finding pauses
+   "Patient demonstrated intact visuospatial construction but notable word-finding \
+pauses
    consistent with early lexical retrieval difficulty."
 
 2. "drawing_findings": One paragraph summarizing the clock drawing assessment.
@@ -68,7 +71,8 @@ Produce a JSON response with exactly these fields:
    Reference specific graph metrics that are clinically relevant.
 
 4. "recommendation": One sentence with a clinical follow-up recommendation based on
-   the risk level (e.g., "Consider referral to neuropsychology for comprehensive evaluation"
+   the risk level (e.g., "Consider referral to neuropsychology for comprehensive \
+evaluation"
    or "Routine follow-up in 12 months recommended").
 
 5. "graph_interpretation": One sentence interpreting the speech graph for a clinician
