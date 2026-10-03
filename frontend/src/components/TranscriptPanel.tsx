@@ -16,7 +16,10 @@ export default function TranscriptPanel({ entries }: TranscriptPanelProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+    scrollRef.current?.scrollTo({
+      top: scrollRef.current.scrollHeight,
+      behavior: "smooth",
+    });
   }, [entries]);
 
   return (
@@ -40,12 +43,16 @@ export default function TranscriptPanel({ entries }: TranscriptPanelProps) {
         >
           <span
             className={`font-medium text-[10px] uppercase tracking-widest ${
-              entry.role === "user" ? "text-[var(--cw-accent)]" : "text-[var(--cw-text-tertiary)]"
+              entry.role === "user"
+                ? "text-[var(--cw-accent)]"
+                : "text-[var(--cw-text-tertiary)]"
             }`}
           >
             {entry.role === "user" ? "Patient" : "Agent"}
           </span>
-          <p className="mt-1 text-sm leading-relaxed text-[var(--cw-text-secondary)]">{entry.text}</p>
+          <p className="mt-1 text-sm leading-relaxed text-[var(--cw-text-secondary)]">
+            {entry.text}
+          </p>
         </div>
       ))}
     </div>

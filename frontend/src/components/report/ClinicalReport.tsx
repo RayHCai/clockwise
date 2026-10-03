@@ -177,7 +177,9 @@ export function ClinicalReport({
               riskLevel={fusionResult.risk_level}
             />
             <View style={{ justifyContent: "center", gap: 4 }}>
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+              <View
+                style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
+              >
                 <Text
                   style={[
                     s.riskScore,
@@ -221,7 +223,9 @@ export function ClinicalReport({
             )}
             {observations.length > 0 && (
               <View style={{ marginTop: 4 }}>
-                <Text style={{ fontSize: 7, color: "#6B7280", marginBottom: 2 }}>
+                <Text
+                  style={{ fontSize: 7, color: "#6B7280", marginBottom: 2 }}
+                >
                   AI Observations:
                 </Text>
                 {observations.slice(-5).map((obs, i) => (
@@ -232,7 +236,14 @@ export function ClinicalReport({
               </View>
             )}
             {narrative.drawing_findings && (
-              <Text style={{ fontSize: 8, color: "#374151", marginTop: 4, lineHeight: 1.4 }}>
+              <Text
+                style={{
+                  fontSize: 8,
+                  color: "#374151",
+                  marginTop: 4,
+                  lineHeight: 1.4,
+                }}
+              >
                 {narrative.drawing_findings}
               </Text>
             )}
@@ -243,7 +254,14 @@ export function ClinicalReport({
             <Text style={s.sectionTitle}>Speech Graph</Text>
             <MiniSpeechGraph data={graphData} />
             {narrative.graph_interpretation && (
-              <Text style={{ fontSize: 8, color: "#374151", marginTop: 4, lineHeight: 1.4 }}>
+              <Text
+                style={{
+                  fontSize: 8,
+                  color: "#374151",
+                  marginTop: 4,
+                  lineHeight: 1.4,
+                }}
+              >
                 {narrative.graph_interpretation}
               </Text>
             )}
@@ -268,8 +286,14 @@ export function ClinicalReport({
         {/* Domain Subscores */}
         <View style={s.section}>
           <Text style={s.sectionTitle}>Domain Subscores</Text>
-          <ScoreBar label="Visuospatial" value={fusionResult.subscores.visuospatial} />
-          <ScoreBar label="Executive" value={fusionResult.subscores.executive} />
+          <ScoreBar
+            label="Visuospatial"
+            value={fusionResult.subscores.visuospatial}
+          />
+          <ScoreBar
+            label="Executive"
+            value={fusionResult.subscores.executive}
+          />
           <ScoreBar label="Language" value={fusionResult.subscores.language} />
           <ScoreBar label="Motor" value={fusionResult.subscores.motor} />
         </View>

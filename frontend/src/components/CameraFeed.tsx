@@ -69,7 +69,9 @@ const CameraFeed = forwardRef<CameraFeedHandle, CameraFeedProps>(
                   "Camera permission denied. Allow camera access in browser settings.",
                 );
               } else if (err.name === "NotFoundError") {
-                setCameraError("No camera found. Connect a camera and try again.");
+                setCameraError(
+                  "No camera found. Connect a camera and try again.",
+                );
               } else {
                 setCameraError(`Camera error: ${err.message}`);
               }
@@ -92,7 +94,12 @@ const CameraFeed = forwardRef<CameraFeedHandle, CameraFeedProps>(
 
     // Connect/disconnect Gemini Live
     useEffect(() => {
-      console.log("[CameraFeed] active:", active, "apiKey:", apiKey ? "present" : "MISSING");
+      console.log(
+        "[CameraFeed] active:",
+        active,
+        "apiKey:",
+        apiKey ? "present" : "MISSING",
+      );
       if (active && apiKey) {
         connect();
       } else {
@@ -106,11 +113,19 @@ const CameraFeed = forwardRef<CameraFeedHandle, CameraFeedProps>(
       const video = videoRef.current;
       const canvas = canvasRef.current;
       if (!video || !canvas) {
-        console.log("[CameraFeed] captureAndSend skipped — video:", !!video, "canvas:", !!canvas);
+        console.log(
+          "[CameraFeed] captureAndSend skipped — video:",
+          !!video,
+          "canvas:",
+          !!canvas,
+        );
         return;
       }
       if (video.readyState < 2) {
-        console.log("[CameraFeed] captureAndSend skipped — video not ready, readyState:", video.readyState);
+        console.log(
+          "[CameraFeed] captureAndSend skipped — video not ready, readyState:",
+          video.readyState,
+        );
         return;
       }
 
@@ -124,7 +139,12 @@ const CameraFeed = forwardRef<CameraFeedHandle, CameraFeedProps>(
     }, [sendFrame]);
 
     useEffect(() => {
-      console.log("[CameraFeed] Frame interval effect — active:", active, "connected:", connected);
+      console.log(
+        "[CameraFeed] Frame interval effect — active:",
+        active,
+        "connected:",
+        connected,
+      );
       if (active && connected) {
         console.log("[CameraFeed] Starting frame capture interval (every 5s)");
         intervalRef.current = setInterval(captureAndSend, 5000);
@@ -167,8 +187,18 @@ const CameraFeed = forwardRef<CameraFeedHandle, CameraFeedProps>(
         {/* Inactive overlay */}
         {!active && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-            <svg className="w-7 h-7 text-[var(--cw-text-tertiary)]/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" />
+            <svg
+              className="w-7 h-7 text-[var(--cw-text-tertiary)]/40"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={1.5}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z"
+              />
             </svg>
             <span className="text-[11px] text-[var(--cw-text-tertiary)] font-medium">
               Camera activates with session

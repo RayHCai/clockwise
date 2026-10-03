@@ -3,7 +3,8 @@
 import { useCallback, useRef, useState } from "react";
 import type { SpeechGraphResult } from "@/lib/types";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
+const BACKEND_URL =
+  process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
 
 export function useSpeechGraph() {
   const [graphData, setGraphData] = useState<SpeechGraphResult | null>(null);

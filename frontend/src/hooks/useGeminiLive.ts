@@ -63,11 +63,15 @@ export function useGeminiLive({ apiKey, onObservation }: UseGeminiLiveOptions) {
                       },
                     ],
                   }),
-                }
+                },
               );
 
               if (!res.ok) {
-                console.error("[GeminiVision] API error:", res.status, await res.text());
+                console.error(
+                  "[GeminiVision] API error:",
+                  res.status,
+                  await res.text(),
+                );
                 return;
               }
 
@@ -84,10 +88,10 @@ export function useGeminiLive({ apiKey, onObservation }: UseGeminiLiveOptions) {
           reader.readAsDataURL(blob);
         },
         "image/jpeg",
-        0.7
+        0.7,
       );
     },
-    [apiKey, onObservation]
+    [apiKey, onObservation],
   );
 
   const disconnect = useCallback(() => {

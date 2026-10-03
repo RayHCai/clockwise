@@ -33,7 +33,9 @@ export default function Dashboard() {
   const [fusionLoading, setFusionLoading] = useState(false);
 
   // Report-related state
-  const [clockDrawingSnapshot, setClockDrawingSnapshot] = useState<string | null>(null);
+  const [clockDrawingSnapshot, setClockDrawingSnapshot] = useState<
+    string | null
+  >(null);
   const [reportPdfUrl, setReportPdfUrl] = useState<string | null>(null);
   const [reportUploaded, setReportUploaded] = useState(false);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
@@ -247,8 +249,7 @@ export default function Dashboard() {
             </h3>
             {graphData && (
               <span className="text-[11px] text-[var(--cw-text-tertiary)] font-mono">
-                {graphData.metrics.N} nodes &middot; {graphData.metrics.E}{" "}
-                edges
+                {graphData.metrics.N} nodes &middot; {graphData.metrics.E} edges
               </span>
             )}
           </div>

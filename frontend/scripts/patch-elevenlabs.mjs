@@ -18,7 +18,7 @@ const filePath = path.join(
   "@elevenlabs",
   "client",
   "dist",
-  "BaseConversation.js"
+  "BaseConversation.js",
 );
 
 if (!fs.existsSync(filePath)) {
@@ -46,7 +46,7 @@ const patched = src.replace(
             return;
         }
         const errorType = errorEvent.error_type;
-        const message = errorEvent.message || errorEvent.reason || "Unknown error";`
+        const message = errorEvent.message || errorEvent.reason || "Unknown error";`,
 );
 
 // Also fix the references further down in the same function
@@ -62,7 +62,7 @@ const patched2 = patched.replace(
             code: errorEvent.code,
             debugMessage: errorEvent.debug_message,
             details: errorEvent.details,
-        });`
+        });`,
 );
 
 fs.writeFileSync(filePath, patched2, "utf8");
