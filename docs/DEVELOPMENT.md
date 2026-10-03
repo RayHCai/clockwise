@@ -54,7 +54,7 @@ Speech Graph Analysis (SGA) converts patient speech into directed network graphs
 
 **Real-time animation:** The graph builds live as the patient speaks during the CDT session. Clinicians (and the fusion model) watch whether the network expands outward (healthy) or collapses into repetitive loops (concerning). This runs alongside the voice agent interaction, providing a continuous visual signal during the assessment.
 
-**Implementation:** The open-source `SpeechGraphs` Python library (UFRN neuroscience lab) computes all metrics from plain text. Frontend visualization via D3.js or vis.js with force-directed layout. Proven at hackathon scale (Patronum, TreeHacks 2025).
+**Implementation:** The open-source `SpeechGraphs` Python library (UFRN neuroscience lab) computes all metrics from plain text. Frontend visualization via D3.js or vis.js with force-directed layout. Proven at hackathon scale (Patronum, TreeHacks 2026).
 
 ### 5. Multimodal Fusion — Unified Cognitive Risk Score
 - Late-fusion model combining drawing process score, drawing product score, speech biomarker score, and speech graph topology metrics (LSC, loop counts, component structure)
