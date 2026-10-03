@@ -1,6 +1,6 @@
 import {
   Document,
-  Image,
+  Image as PdfImage,
   Page,
   StyleSheet,
   Text,
@@ -213,7 +213,7 @@ export function ClinicalReport({
           <View style={s.col}>
             <Text style={s.sectionTitle}>Clock Drawing</Text>
             {clockDrawingSnapshot ? (
-              <Image style={s.clockImage} src={clockDrawingSnapshot} />
+              <PdfImage style={s.clockImage} src={clockDrawingSnapshot} />
             ) : (
               <Text style={{ fontSize: 8, color: "#9CA3AF", marginBottom: 6 }}>
                 No drawing captured

@@ -53,7 +53,6 @@ const CameraFeed = forwardRef<CameraFeedHandle, CameraFeedProps>(
     // Start/stop camera
     useEffect(() => {
       if (active) {
-        setCameraError(null);
         navigator.mediaDevices
           .getUserMedia({ video: { width: 640, height: 480 } })
           .then((stream) => {
@@ -82,11 +81,12 @@ const CameraFeed = forwardRef<CameraFeedHandle, CameraFeedProps>(
         streamRef.current?.getTracks().forEach((t) => t.stop());
         streamRef.current = null;
         if (videoRef.current) videoRef.current.srcObject = null;
-        setCameraError(null);
       }
 
       return () => {
         streamRef.current?.getTracks().forEach((t) => t.stop());
+        // Clear any camera error whenever `active` changes or the feed unmounts.
+        setCameraError(null);
       };
     }, [active]);
 
