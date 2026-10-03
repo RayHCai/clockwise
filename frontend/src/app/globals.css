@@ -4,35 +4,35 @@
 
 :root {
   /* Background — warm off-white */
-  --cw-bg: #FDF8F3;
-  --cw-bg-secondary: #F5EFE6;
+  --cw-bg: #fdf8f3;
+  --cw-bg-secondary: #f5efe6;
 
   /* Surfaces — warm whites */
-  --cw-surface: #FFFAF5;
-  --cw-surface-hover: #F5EDE3;
-  --cw-surface-elevated: #EDE5D8;
+  --cw-surface: #fffaf5;
+  --cw-surface-hover: #f5ede3;
+  --cw-surface-elevated: #ede5d8;
 
   /* Borders */
   --cw-border: rgba(120, 70, 20, 0.12);
   --cw-border-hover: rgba(120, 70, 20, 0.22);
 
   /* Text */
-  --cw-text-primary: #2C1A05;
-  --cw-text-secondary: #6B5744;
-  --cw-text-tertiary: #9C8B78;
+  --cw-text-primary: #2c1a05;
+  --cw-text-secondary: #6b5744;
+  --cw-text-tertiary: #9c8b78;
 
   /* Accent — UT Burnt Orange */
-  --cw-accent: #BF5700;
-  --cw-accent-hover: #A34B00;
+  --cw-accent: #bf5700;
+  --cw-accent-hover: #a34b00;
   --cw-accent-muted: rgba(191, 87, 0, 0.08);
 
   /* Semantic Risk */
-  --cw-risk-low: #10B981;
-  --cw-risk-moderate: #F59E0B;
-  --cw-risk-high: #EF4444;
-  --cw-risk-low-muted: rgba(16, 185, 129, 0.10);
-  --cw-risk-moderate-muted: rgba(245, 158, 11, 0.10);
-  --cw-risk-high-muted: rgba(239, 68, 68, 0.10);
+  --cw-risk-low: #10b981;
+  --cw-risk-moderate: #f59e0b;
+  --cw-risk-high: #ef4444;
+  --cw-risk-low-muted: rgba(16, 185, 129, 0.1);
+  --cw-risk-moderate-muted: rgba(245, 158, 11, 0.1);
+  --cw-risk-high-muted: rgba(239, 68, 68, 0.1);
 }
 
 @theme inline {
@@ -79,33 +79,60 @@ summary {
 }
 
 .card-hover {
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 .card-hover:hover {
   border-color: var(--cw-border-hover);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.03);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.04),
+    0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
 /* ─── Keyframes ─── */
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 16px rgba(191, 87, 0, 0.2); }
-  50% { box-shadow: 0 0 28px rgba(191, 87, 0, 0.35); }
+  0%,
+  100% {
+    box-shadow: 0 0 16px rgba(191, 87, 0, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 28px rgba(191, 87, 0, 0.35);
+  }
 }
 
 @keyframes orb-breathe {
-  0%, 100% { transform: scale(1); opacity: 0.85; }
-  50% { transform: scale(1.1); opacity: 1; }
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
 }
 
 @keyframes fade-in-up {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes status-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
 }
 
 /* ─── ReactFlow Overrides ─── */

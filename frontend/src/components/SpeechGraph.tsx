@@ -20,7 +20,9 @@ interface SpeechGraphProps {
 }
 
 // Deterministic force-directed-ish layout using golden angle distribution
-function computeLayout(nodes: SpeechGraphResult["nodes"]): Map<string, { x: number; y: number }> {
+function computeLayout(
+  nodes: SpeechGraphResult["nodes"],
+): Map<string, { x: number; y: number }> {
   const positions = new Map<string, { x: number; y: number }>();
   const n = nodes.length;
   if (n === 0) return positions;
@@ -63,7 +65,9 @@ export default function SpeechGraph({ data }: SpeechGraphProps) {
       adjacency.get(e.target)!.add(e.source);
     });
 
-    const connectedToSelected = selectedNode ? adjacency.get(selectedNode) ?? new Set() : null;
+    const connectedToSelected = selectedNode
+      ? (adjacency.get(selectedNode) ?? new Set())
+      : null;
 
     const flowNodes: Node[] = data.nodes.map((node) => {
       const pos = positions.get(node.id) ?? { x: 400, y: 300 };
@@ -90,19 +94,19 @@ export default function SpeechGraph({ data }: SpeechGraphProps) {
           background: isSelected
             ? "#BF5700"
             : isConnected
-            ? "#E08A4E"
-            : `rgba(191, 87, 0, ${intensity})`,
+              ? "#E08A4E"
+              : `rgba(191, 87, 0, ${intensity})`,
           color: isSelected || isConnected ? "#FFFFFF" : "#2C1A05",
           border: isSelected
             ? "2px solid #A34B00"
             : isConnected
-            ? "1px solid #F0B88A"
-            : "1px solid rgba(120, 70, 20, 0.12)",
+              ? "1px solid #F0B88A"
+              : "1px solid rgba(120, 70, 20, 0.12)",
           boxShadow: isSelected
             ? "0 0 16px rgba(191, 87, 0, 0.35)"
             : isConnected
-            ? "0 0 10px rgba(191, 87, 0, 0.2)"
-            : "none",
+              ? "0 0 10px rgba(191, 87, 0, 0.2)"
+              : "none",
           opacity: dimmed ? 0.25 : 1,
           transition: "all 0.3s ease",
           cursor: "pointer",
@@ -120,7 +124,8 @@ export default function SpeechGraph({ data }: SpeechGraphProps) {
       const isHighRepeat = edge.weight > 2;
       const isSelfLoop = edge.source === edge.target;
       const connectedToSel =
-        selectedNode && (edge.source === selectedNode || edge.target === selectedNode);
+        selectedNode &&
+        (edge.source === selectedNode || edge.target === selectedNode);
       const dimmed = selectedNode && !connectedToSel;
 
       return {
@@ -132,8 +137,8 @@ export default function SpeechGraph({ data }: SpeechGraphProps) {
           stroke: isHighRepeat
             ? "#EF4444"
             : connectedToSel
-            ? "#BF5700"
-            : "#D4C4B0",
+              ? "#BF5700"
+              : "#D4C4B0",
           strokeWidth: 1 + normalizedWeight * 3,
           opacity: dimmed ? 0.1 : isSelfLoop ? 0.5 : 0.6,
           transition: "all 0.3s ease",
@@ -145,8 +150,8 @@ export default function SpeechGraph({ data }: SpeechGraphProps) {
           color: isHighRepeat
             ? "#EF4444"
             : connectedToSel
-            ? "#BF5700"
-            : "#D4C4B0",
+              ? "#BF5700"
+              : "#D4C4B0",
         },
         label: edge.weight > 1 ? `${edge.weight}` : undefined,
         labelStyle: { fontSize: 9, fill: "#9C8B78" },

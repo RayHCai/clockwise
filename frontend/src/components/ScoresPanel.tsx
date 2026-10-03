@@ -16,8 +16,8 @@ function ScoreBar({ label, value }: { label: string; value: number }) {
     value < 33
       ? "bg-[var(--cw-risk-low)]"
       : value < 66
-      ? "bg-[var(--cw-risk-moderate)]"
-      : "bg-[var(--cw-risk-high)]";
+        ? "bg-[var(--cw-risk-moderate)]"
+        : "bg-[var(--cw-risk-high)]";
 
   return (
     <div className="flex items-center gap-2.5">
@@ -49,16 +49,16 @@ export default function ScoresPanel({
     ? fusionResult.risk_level === "low"
       ? "text-[var(--cw-risk-low)]"
       : fusionResult.risk_level === "moderate"
-      ? "text-[var(--cw-risk-moderate)]"
-      : "text-[var(--cw-risk-high)]"
+        ? "text-[var(--cw-risk-moderate)]"
+        : "text-[var(--cw-risk-high)]"
     : "text-[var(--cw-text-tertiary)]";
 
   const riskBg = fusionResult
     ? fusionResult.risk_level === "low"
       ? "bg-[var(--cw-risk-low-muted)] text-[var(--cw-risk-low)]"
       : fusionResult.risk_level === "moderate"
-      ? "bg-[var(--cw-risk-moderate-muted)] text-[var(--cw-risk-moderate)]"
-      : "bg-[var(--cw-risk-high-muted)] text-[var(--cw-risk-high)]"
+        ? "bg-[var(--cw-risk-moderate-muted)] text-[var(--cw-risk-moderate)]"
+        : "bg-[var(--cw-risk-high-muted)] text-[var(--cw-risk-high)]"
     : "";
 
   return (
@@ -68,8 +68,11 @@ export default function ScoresPanel({
         <h4 className="text-[11px] font-medium text-[var(--cw-text-tertiary)] uppercase tracking-widest mb-2">
           Drawing Observation
         </h4>
-        <p className={`text-sm leading-relaxed min-h-[2.5rem] ${latestObservation ? "text-[var(--cw-text-secondary)]" : "text-[var(--cw-text-tertiary)] italic"}`}>
-          {latestObservation || "No observations yet — start session and point camera at drawing."}
+        <p
+          className={`text-sm leading-relaxed min-h-[2.5rem] ${latestObservation ? "text-[var(--cw-text-secondary)]" : "text-[var(--cw-text-tertiary)] italic"}`}
+        >
+          {latestObservation ||
+            "No observations yet — start session and point camera at drawing."}
         </p>
       </div>
 
@@ -100,7 +103,9 @@ export default function ScoresPanel({
                 title={tip}
               >
                 <div className="text-lg font-bold text-[var(--cw-text-primary)] font-mono tabular-nums">
-                  {typeof val === "number" && val % 1 !== 0 ? val.toFixed(2) : val}
+                  {typeof val === "number" && val % 1 !== 0
+                    ? val.toFixed(2)
+                    : val}
                 </div>
                 <div className="text-[9px] text-[var(--cw-text-tertiary)] uppercase tracking-wider mt-0.5">
                   {key}
@@ -118,11 +123,15 @@ export default function ScoresPanel({
             Cognitive Risk Assessment
           </h4>
           <div className="flex items-center gap-4 mb-4">
-            <div className={`text-4xl font-bold font-mono tabular-nums ${riskColor}`}>
+            <div
+              className={`text-4xl font-bold font-mono tabular-nums ${riskColor}`}
+            >
               {fusionResult.composite_score}
             </div>
             <div>
-              <div className={`text-sm font-semibold capitalize rounded-md px-2.5 py-0.5 inline-block ${riskBg}`}>
+              <div
+                className={`text-sm font-semibold capitalize rounded-md px-2.5 py-0.5 inline-block ${riskBg}`}
+              >
                 {fusionResult.risk_level} Risk
               </div>
               <div className="text-[11px] text-[var(--cw-text-tertiary)] mt-1">
@@ -131,9 +140,18 @@ export default function ScoresPanel({
             </div>
           </div>
           <div className="space-y-2">
-            <ScoreBar label="Visuospatial" value={fusionResult.subscores.visuospatial} />
-            <ScoreBar label="Executive" value={fusionResult.subscores.executive} />
-            <ScoreBar label="Language" value={fusionResult.subscores.language} />
+            <ScoreBar
+              label="Visuospatial"
+              value={fusionResult.subscores.visuospatial}
+            />
+            <ScoreBar
+              label="Executive"
+              value={fusionResult.subscores.executive}
+            />
+            <ScoreBar
+              label="Language"
+              value={fusionResult.subscores.language}
+            />
             <ScoreBar label="Motor" value={fusionResult.subscores.motor} />
           </div>
           <p className="text-xs text-[var(--cw-text-tertiary)] mt-4 leading-relaxed">

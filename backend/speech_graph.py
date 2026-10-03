@@ -7,11 +7,12 @@ and computes topological metrics validated as cognitive biomarkers.
 Reference: Mota et al. (2012) PLOS ONE; Botezatu et al. (2023) Front. Aging Neurosci.
 """
 
-import re
 import math
+import re
+from typing import TypedDict
+
 import networkx as nx
 import numpy as np
-from typing import TypedDict
 
 
 class GraphNode(TypedDict):
@@ -28,15 +29,15 @@ class GraphEdge(TypedDict):
 
 
 class SpeechGraphMetrics(TypedDict):
-    N: int       # node count (unique words)
-    E: int       # edge count (total transitions)
-    PE: int      # parallel edges (repeated word pairs)
-    L1: int      # 1-node loops (self-loops / immediate repetition)
-    L2: int      # 2-node loops (A->B->A)
-    L3: int      # 3-node loops (A->B->C->A)
-    LCC: int     # largest weakly connected component
-    LSC: int     # largest strongly connected component
-    ATD: float   # average total degree
+    N: int  # node count (unique words)
+    E: int  # edge count (total transitions)
+    PE: int  # parallel edges (repeated word pairs)
+    L1: int  # 1-node loops (self-loops / immediate repetition)
+    L2: int  # 2-node loops (A->B->A)
+    L3: int  # 3-node loops (A->B->C->A)
+    LCC: int  # largest weakly connected component
+    LSC: int  # largest strongly connected component
+    ATD: float  # average total degree
     density: float
 
 
@@ -53,70 +54,93 @@ def tokenize(text: str) -> list[str]:
 
 def build_graph(words: list[str]) -> nx.DiGraph:
     """Build a directed graph from consecutive word pairs."""
-    G = nx.DiGraph()
+    graph = nx.DiGraph()
     for word in set(words):
-        G.add_node(word)
+        graph.add_node(word)
     for i in range(len(words) - 1):
         src, tgt = words[i], words[i + 1]
-        if G.has_edge(src, tgt):
-            G[src][tgt]["weight"] += 1
+        if graph.has_edge(src, tgt):
+            graph[src][tgt]["weight"] += 1
         else:
-            G.add_edge(src, tgt, weight=1)
-    return G
+            graph.add_edge(src, tgt, weight=1)
+    return graph
 
 
-def compute_metrics(G: nx.DiGraph, words: list[str]) -> SpeechGraphMetrics:
+def compute_metrics(graph: nx.DiGraph, words: list[str]) -> SpeechGraphMetrics:
     """Compute all SGA topological metrics."""
-    N = G.number_of_nodes()
-    E = G.number_of_edges()
+    n_nodes = graph.number_of_nodes()
+    n_edges = graph.number_of_edges()
 
-    if N == 0:
+    if n_nodes == 0:
         return SpeechGraphMetrics(
-            N=0, E=0, PE=0, L1=0, L2=0, L3=0,
-            LCC=0, LSC=0, ATD=0.0, density=0.0,
+            N=0,
+            E=0,
+            PE=0,
+            L1=0,
+            L2=0,
+            L3=0,
+            LCC=0,
+            LSC=0,
+            ATD=0.0,
+            density=0.0,
         )
 
     # Parallel edges: edges with weight > 1
-    PE = sum(1 for _, _, d in G.edges(data=True) if d["weight"] > 1)
+    pe = sum(1 for _, _, d in graph.edges(data=True) if d["weight"] > 1)
 
     # L1: self-loops (word immediately repeated)
-    L1 = sum(1 for i in range(len(words) - 1) if words[i] == words[i + 1])
+    l1 = sum(1 for i in range(len(words) - 1) if words[i] == words[i + 1])
 
     # L2, L3 via adjacency matrix trace
-    A = nx.adjacency_matrix(G, weight=None).toarray().astype(np.float64)
-    L2 = int(np.trace(A @ A))
-    L3 = int(np.trace(A @ A @ A))
+    adj = nx.adjacency_matrix(graph, weight=None).toarray().astype(np.float64)
+    l2 = int(np.trace(adj @ adj))
+    l3 = int(np.trace(adj @ adj @ adj))
 
     # Connected components
-    LCC = len(max(nx.weakly_connected_components(G), key=len))
-    LSC = len(max(nx.strongly_connected_components(G), key=len))
+    lcc = len(max(nx.weakly_connected_components(graph), key=len))
+    lsc = len(max(nx.strongly_connected_components(graph), key=len))
 
     # Average total degree
-    ATD = np.mean([G.in_degree(n) + G.out_degree(n) for n in G.nodes()])
+    atd = np.mean([graph.in_degree(n) + graph.out_degree(n) for n in graph.nodes()])
 
     # Density (excluding self-loops)
-    self_loops = nx.number_of_selfloops(G)
-    density = (E - self_loops) / (N * N) if N > 0 else 0.0
+    self_loops = nx.number_of_selfloops(graph)
+    density = (n_edges - self_loops) / (n_nodes * n_nodes) if n_nodes > 0 else 0.0
 
     return SpeechGraphMetrics(
-        N=N, E=E, PE=PE, L1=L1, L2=L2, L3=L3,
-        LCC=LCC, LSC=LSC,
-        ATD=round(float(ATD), 3),
+        N=n_nodes,
+        E=n_edges,
+        PE=pe,
+        L1=l1,
+        L2=l2,
+        L3=l3,
+        LCC=lcc,
+        LSC=lsc,
+        ATD=round(float(atd), 3),
         density=round(float(density), 4),
     )
 
 
-def layout_nodes(G: nx.DiGraph) -> dict[str, tuple[float, float]]:
+def layout_nodes(graph: nx.DiGraph) -> dict[str, tuple[float, float]]:
     """Compute force-directed positions for React Flow rendering."""
-    if G.number_of_nodes() == 0:
+    if graph.number_of_nodes() == 0:
         return {}
-    if G.number_of_nodes() == 1:
-        node = list(G.nodes())[0]
+    if graph.number_of_nodes() == 1:
+        node = list(graph.nodes())[0]
         return {node: (400.0, 300.0)}
-    return nx.spring_layout(G, k=2.0 / math.sqrt(G.number_of_nodes()), iterations=50, seed=42, scale=300, center=(400, 300))
+    return nx.spring_layout(
+        graph,
+        k=2.0 / math.sqrt(graph.number_of_nodes()),
+        iterations=50,
+        seed=42,
+        scale=300,
+        center=(400, 300),
+    )
 
 
-def analyze_transcript(transcript: str, window_size: int = 0, step: int = 3) -> SpeechGraphResult:
+def analyze_transcript(
+    transcript: str, window_size: int = 0, step: int = 3
+) -> SpeechGraphResult:
     """
     Full speech graph analysis pipeline.
 
@@ -131,7 +155,9 @@ def analyze_transcript(transcript: str, window_size: int = 0, step: int = 3) -> 
     words = tokenize(transcript)
 
     if not words:
-        return SpeechGraphResult(metrics=compute_metrics(nx.DiGraph(), []), nodes=[], edges=[])
+        return SpeechGraphResult(
+            metrics=compute_metrics(nx.DiGraph(), []), nodes=[], edges=[]
+        )
 
     # Apply sliding window if requested (use last window for metrics)
     if window_size > 0 and len(words) > window_size:
@@ -139,14 +165,11 @@ def analyze_transcript(transcript: str, window_size: int = 0, step: int = 3) -> 
         all_words_in_windows: list[str] = []
         for start in range(0, len(words) - window_size + 1, step):
             all_words_in_windows.extend(words[start : start + window_size])
-        G = build_graph(words)  # full graph for visualization
-        metrics = compute_metrics(G, words)
+        graph = build_graph(words)  # full graph for visualization
+        metrics = compute_metrics(graph, words)
     else:
-        G = build_graph(words)
-        metrics = compute_metrics(G, words)
-
-    # Compute layout positions
-    positions = layout_nodes(G)
+        graph = build_graph(words)
+        metrics = compute_metrics(graph, words)
 
     # Word frequencies for node sizing
     freq: dict[str, int] = {}
@@ -155,22 +178,25 @@ def analyze_transcript(transcript: str, window_size: int = 0, step: int = 3) -> 
 
     # Build node list
     nodes: list[GraphNode] = []
-    for node_id in G.nodes():
-        pos = positions.get(node_id, (400.0, 300.0))
-        nodes.append(GraphNode(
-            id=node_id,
-            label=node_id,
-            frequency=freq.get(node_id, 1),
-        ))
+    for node_id in graph.nodes():
+        nodes.append(
+            GraphNode(
+                id=node_id,
+                label=node_id,
+                frequency=freq.get(node_id, 1),
+            )
+        )
 
     # Build edge list
     edges: list[GraphEdge] = []
-    for src, tgt, data in G.edges(data=True):
-        edges.append(GraphEdge(
-            id=f"{src}->{tgt}",
-            source=src,
-            target=tgt,
-            weight=data["weight"],
-        ))
+    for src, tgt, data in graph.edges(data=True):
+        edges.append(
+            GraphEdge(
+                id=f"{src}->{tgt}",
+                source=src,
+                target=tgt,
+                weight=data["weight"],
+            )
+        )
 
     return SpeechGraphResult(metrics=metrics, nodes=nodes, edges=edges)

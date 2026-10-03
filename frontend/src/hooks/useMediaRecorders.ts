@@ -14,7 +14,10 @@ function pickMime(kind: "audio" | "video"): string {
       ? ["audio/webm;codecs=opus", "audio/webm", "audio/ogg"]
       : ["video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"];
   for (const mime of candidates) {
-    if (typeof MediaRecorder !== "undefined" && MediaRecorder.isTypeSupported(mime)) {
+    if (
+      typeof MediaRecorder !== "undefined" &&
+      MediaRecorder.isTypeSupported(mime)
+    ) {
       return mime;
     }
   }
@@ -26,7 +29,9 @@ function stopRecorder(
   chunks: Blob[],
 ): Promise<Blob | null> {
   if (!recorder || recorder.state === "inactive") {
-    return Promise.resolve(chunks.length > 0 ? new Blob(chunks, { type: chunks[0].type }) : null);
+    return Promise.resolve(
+      chunks.length > 0 ? new Blob(chunks, { type: chunks[0].type }) : null,
+    );
   }
   return new Promise((resolve) => {
     recorder.onstop = () => {
@@ -48,7 +53,9 @@ export function useMediaRecorders(): UseMediaRecordersReturn {
     if (typeof MediaRecorder === "undefined") return;
     try {
       audioChunksRef.current = [];
-      const recorder = new MediaRecorder(stream, { mimeType: pickMime("audio") });
+      const recorder = new MediaRecorder(stream, {
+        mimeType: pickMime("audio"),
+      });
       recorder.ondataavailable = (e) => {
         if (e.data.size > 0) audioChunksRef.current.push(e.data);
       };
@@ -63,7 +70,9 @@ export function useMediaRecorders(): UseMediaRecordersReturn {
     if (typeof MediaRecorder === "undefined") return;
     try {
       videoChunksRef.current = [];
-      const recorder = new MediaRecorder(stream, { mimeType: pickMime("video") });
+      const recorder = new MediaRecorder(stream, {
+        mimeType: pickMime("video"),
+      });
       recorder.ondataavailable = (e) => {
         if (e.data.size > 0) videoChunksRef.current.push(e.data);
       };

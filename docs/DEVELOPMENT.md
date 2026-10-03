@@ -6,11 +6,11 @@
 
 ## Problem
 
-The Clock Drawing Test (CDT) is a clinically validated 2-minute dementia screen, but current implementations suffer from three limitations: (1) manual scoring is subjective and misses subtle process-level signals, (2) AI-powered digital CDT tools (e.g., DCTclock) analyze drawings in isolation without leveraging speech biomarkers, and (3) conversational AI screeners (e.g., CognoSpeak, DCS) capture voice but exclude drawing tasks. No existing system combines real-time verbal guidance with simultaneous drawing and speech analysis — despite multimodal fusion consistently improving classification accuracy by 7–11 points over any single modality (Yamada et al., 2021; Banks et al., 2024).
+The Clock Drawing Test (CDT) is a clinically validated 2-minute dementia screen, but current implementations suffer from three limitations: (1) manual scoring is subjective and misses subtle process-level signals, (2) AI-powered digital CDT tools (e.g., DCTclock) analyze drawings in isolation without leveraging speech biomarkers, and (3) conversational AI screeners (e.g., CognoSpeak, DCS) capture voice but exclude drawing tasks. No existing system combines real-time verbal guidance with simultaneous drawing and speech analysis, despite multimodal fusion consistently improving classification accuracy by 7 to 11 points over any single modality (Yamada et al., 2021; Banks et al., 2024).
 
 ## Vision
 
-A voice-guided AI agent that walks patients through the Clock Drawing Test conversationally while simultaneously analyzing the drawing process via computer vision and extracting speech biomarkers from the patient's verbal responses — producing a unified cognitive risk score.
+A voice-guided AI agent that walks patients through the Clock Drawing Test conversationally while simultaneously analyzing the drawing process via computer vision and extracting speech biomarkers from the patient's verbal responses, producing a unified cognitive risk score.
 
 ## Target Users
 
@@ -20,25 +20,25 @@ A voice-guided AI agent that walks patients through the Clock Drawing Test conve
 
 ## Core Capabilities
 
-### 1. Voice Agent — Guided CDT Administration
+### 1. Voice Agent, Guided CDT Administration
 - Conversational agent delivers standardized CDT instructions ("Draw a clock showing 10 past 11")
 - Adapts pacing and provides gentle prompts based on patient hesitation or silence
 - Captures and timestamps all patient speech during the session
 - Designed for accessibility: clear, warm tone; supports hearing-impaired patients via visual text fallback
 
-### 2. Drawing Analysis — Real-Time Computer Vision
+### 2. Drawing Analysis, Real-Time Computer Vision
 - Captures drawing input via tablet/stylus (iPad + Apple Pencil primary target)
 - Extracts process features: stroke order, velocity, hesitation pauses, pen pressure, latency between elements
 - Extracts product features: circle closure, number placement/spacing, hand position accuracy, symmetry
 - Runs inference on completed drawing using fine-tuned ViT or CNN classifier (target: ≥90% balanced accuracy on NHATS benchmark)
 
-### 3. Speech Analysis — Voice Biomarker Extraction
+### 3. Speech Analysis, Voice Biomarker Extraction
 - Real-time ASR transcription of patient speech during the task
 - Acoustic features: pause frequency/duration, speech rate, jitter, shimmer, MFCCs
 - Linguistic features: lexical diversity, semantic coherence, word-finding difficulty markers, repetitions
 - Discourse features: response latency to prompts, conversational engagement level
 
-### 4. Speech Graph Analysis — Real-Time Topological Visualization
+### 4. Speech Graph Analysis, Real-Time Topological Visualization
 Speech Graph Analysis (SGA) converts patient speech into directed network graphs where each unique word becomes a node and consecutive word pairs create edges. Developed by Mota et al. (2012, *PLOS ONE*) and validated on the DementiaBank Pitt Corpus by Botezatu, Miller & Kiselica (2023, *Frontiers in Aging Neuroscience*), SGA produces an instantly interpretable visual biomarker: healthy speech generates dense, richly connected graphs while dementia speech collapses into sparse, tight loops.
 
 **Graph construction:** Transcribed speech is processed through a 30-word sliding window (3-word step). Each unique word = node; each consecutive word pair = directed edge. Edge thickness scales with repetition count.
@@ -50,15 +50,15 @@ Speech Graph Analysis (SGA) converts patient speech into directed network graphs
 - **Connected components:** Disconnected subgraphs → fragmented, disjointed topic flow.
 - **Node count:** Few unique nodes → impoverished vocabulary.
 
-**Visual signal:** A healthy speaker's graph looks like an expansive web with many nodes and thin, diverse edges. An AD patient's graph collapses into a small cluster with thick repeated edges and tight loops. This contrast is immediately visible without explanation — the graph *is* the diagnosis.
+**Visual signal:** A healthy speaker's graph looks like an expansive web with many nodes and thin, diverse edges. An AD patient's graph collapses into a small cluster with thick repeated edges and tight loops. This contrast is immediately visible without explanation, the graph *is* the diagnosis.
 
 **Real-time animation:** The graph builds live as the patient speaks during the CDT session. Clinicians (and the fusion model) watch whether the network expands outward (healthy) or collapses into repetitive loops (concerning). This runs alongside the voice agent interaction, providing a continuous visual signal during the assessment.
 
-**Implementation:** The open-source `SpeechGraphs` Python library (UFRN neuroscience lab) computes all metrics from plain text. Frontend visualization via D3.js or vis.js with force-directed layout. Proven at hackathon scale (Patronum, TreeHacks 2025).
+**Implementation:** The open-source `SpeechGraphs` Python library (UFRN neuroscience lab) computes all metrics from plain text. Frontend visualization via D3.js or vis.js with force-directed layout. Proven at hackathon scale (Patronum, TreeHacks 2026).
 
-### 5. Multimodal Fusion — Unified Cognitive Risk Score
+### 5. Multimodal Fusion, Unified Cognitive Risk Score
 - Late-fusion model combining drawing process score, drawing product score, speech biomarker score, and speech graph topology metrics (LSC, loop counts, component structure)
-- Outputs: composite risk score (0–100), per-domain subscores (visuospatial, executive, language, motor), confidence interval
+- Outputs: composite risk score (0 to 100), per-domain subscores (visuospatial, executive, language, motor), confidence interval
 - Calibrated against established instruments (MoCA, MMSE) and, where available, amyloid-PET status
 - Longitudinal tracking: flag significant decline across repeated administrations
 
@@ -143,15 +143,15 @@ Speech Graph Analysis (SGA) converts patient speech into directed network graphs
 
 ## Scope & Phasing
 
-**Phase 1 (MVP, 0–4 months):** Tablet app with guided CDT voice agent + drawing CV analysis. No speech biomarkers. Output: drawing-only risk score + session recording.
+**Phase 1 (MVP, 0 to 4 months):** Tablet app with guided CDT voice agent + drawing CV analysis. No speech biomarkers. Output: drawing-only risk score + session recording.
 
-**Phase 2 (4–8 months):** Add speech biomarker pipeline. Implement late-fusion model. Longitudinal tracking across sessions. Clinician dashboard with per-domain subscores.
+**Phase 2 (4 to 8 months):** Add speech biomarker pipeline. Implement late-fusion model. Longitudinal tracking across sessions. Clinician dashboard with per-domain subscores.
 
-**Phase 3 (8–14 months):** Clinical validation study (target n ≥ 500). EHR integration (FHIR). Regulatory submission prep. Remote/telemedicine deployment mode.
+**Phase 3 (8 to 14 months):** Clinical validation study (target n ≥ 500). EHR integration (FHIR). Regulatory submission prep. Remote/telemedicine deployment mode.
 
 ## Open Questions
 
 1. Should the agent adapt its conversational behavior based on real-time drawing/speech signals (e.g., offer more encouragement if detecting distress), or maintain strict standardization for diagnostic validity?
 2. What is the minimum viable dataset size for training the multimodal fusion layer with clinical-grade performance?
 3. Is there a viable path to integrate with existing Linus Health / DCTclock infrastructure rather than building de novo?
-4. How should the system handle patients who cannot complete the drawing task — is partial data clinically useful?
+4. How should the system handle patients who cannot complete the drawing task, is partial data clinically useful?

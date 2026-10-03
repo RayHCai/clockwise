@@ -1,6 +1,7 @@
 # === Environment & Secrets ===
 .env
 .env.*
+!.env.example
 
 # === Python ===
 __pycache__/
@@ -44,3 +45,8 @@ desktop.ini
 # === Logs ===
 *.log
 npm-debug.log*
+
+# === AI tools ===
+.claude/
+CLAUDE.md
+AGENTS.md

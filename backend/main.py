@@ -7,18 +7,20 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from speech_graph import analyze_transcript
-from fusion import analyze_fusion
 from conversation import get_session, remove_session
+from fusion import analyze_fusion
 from report_narrative import generate_clinical_narrative
 from s3_upload import generate_presigned_urls
+from speech_graph import analyze_transcript
 
 app = FastAPI(title="Guidr API", version="0.1.0")
+
 
 @app.on_event("startup")
 def _debug_routes():
     paths = [r.path for r in app.routes if hasattr(r, "methods")]
     print(f"[DEBUG] Registered routes: {paths}")
+
 
 allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
 

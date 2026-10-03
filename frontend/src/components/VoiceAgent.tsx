@@ -94,7 +94,9 @@ export default function VoiceAgent({
   useEffect(() => {
     return () => {
       if (conversationRef.current.status === "connected") {
-        try { conversationRef.current.endSession(); } catch {}
+        try {
+          conversationRef.current.endSession();
+        } catch {}
       }
     };
   }, []);

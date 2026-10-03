@@ -1,4 +1,11 @@
-import { Circle, G, Line, Path, Svg, Text as SvgText } from "@react-pdf/renderer";
+import {
+  Circle,
+  G,
+  Line,
+  Path,
+  Svg,
+  Text as SvgText,
+} from "@react-pdf/renderer";
 
 interface RiskGaugeProps {
   score: number;
@@ -39,7 +46,14 @@ export function RiskGauge({ score }: RiskGaugeProps) {
 
       {/* Needle */}
       <G>
-        <Line x1={cx} y1={cy} x2={nx} y2={ny} stroke="#1F2937" strokeWidth={2} />
+        <Line
+          x1={cx}
+          y1={cy}
+          x2={nx}
+          y2={ny}
+          stroke="#1F2937"
+          strokeWidth={2}
+        />
         <Circle cx={cx} cy={cy} r={3} fill="#1F2937" />
       </G>
 

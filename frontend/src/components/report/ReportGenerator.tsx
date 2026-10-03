@@ -26,11 +26,7 @@ interface ReportGeneratorProps {
   onError: (error: string) => void;
 }
 
-type GenerationStep =
-  | "narrative"
-  | "rendering"
-  | "uploading"
-  | "done";
+type GenerationStep = "narrative" | "rendering" | "uploading" | "done";
 
 const stepLabels: Record<GenerationStep, string> = {
   narrative: "Generating clinical narrative...",
