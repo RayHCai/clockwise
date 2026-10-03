@@ -9,7 +9,7 @@
     "lint": "eslint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "postinstall": "node scripts/patch-elevenlabs.js"
+    "postinstall": "node scripts/patch-elevenlabs.mjs"
   },
   "dependencies": {
     "@elevenlabs/react": "^1.1.0",
