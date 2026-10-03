@@ -14,10 +14,10 @@ Research basis:
 """
 
 import os
-import json
+
+from dotenv import load_dotenv
 from google import genai
 from google.genai import types
-from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -133,7 +133,11 @@ class ConversationManager:
             contents=[
                 types.Content(
                     role="user",
-                    parts=[types.Part.from_text(text="[Session started. Begin your introduction.]")],
+                    parts=[
+                        types.Part.from_text(
+                            text="[Session started. Begin your introduction.]"
+                        )
+                    ],
                 )
             ],
             config=types.GenerateContentConfig(
@@ -144,7 +148,9 @@ class ConversationManager:
         )
         agent_text = response.text.strip()
         # Store the synthetic trigger and response in history
-        self.history.append({"role": "user", "text": "[Session started. Begin your introduction.]"})
+        self.history.append(
+            {"role": "user", "text": "[Session started. Begin your introduction.]"}
+        )
         self.history.append({"role": "model", "text": agent_text})
         return agent_text
 
@@ -173,10 +179,12 @@ class ConversationManager:
         for msg in self.history:
             if msg["text"] == "[Session started. Begin your introduction.]":
                 continue
-            result.append({
-                "role": "agent" if msg["role"] == "model" else "user",
-                "text": msg["text"],
-            })
+            result.append(
+                {
+                    "role": "agent" if msg["role"] == "model" else "user",
+                    "text": msg["text"],
+                }
+            )
         return result
 
 

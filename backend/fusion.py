@@ -5,11 +5,12 @@ Combines drawing observations, speech graph metrics, and transcript
 to produce a unified cognitive risk score.
 """
 
-import os
 import json
+import os
+
+from dotenv import load_dotenv
 from google import genai
 from google.genai import types
-from dotenv import load_dotenv
 
 load_dotenv()
 
